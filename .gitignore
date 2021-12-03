@@ -1,0 +1,6 @@
+# IDE dirs
+.idea
+.vs
+
+# Env vars
+.env
