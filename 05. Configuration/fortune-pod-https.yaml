@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-https
+  labels:
+    app: fortune
+spec:
+  containers:
+    - name: html-generator
+      image: burkovski/fortune-env
+      env:
+        - name: INTERVAL
+          valueFrom:
+            configMapKeyRef:
+              key: sleep-interval
+              name: fortune-config
+      volumeMounts:
+        - mountPath: /var/htdocs
+          name: html
+    - name: web-server
+      image: nginx:alpine
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: html
+          readOnly: true
+        - mountPath: /etc/nginx/conf.d
+          name: config
+          readOnly: true
+        - mountPath: /etc/nginx/certs/
+          name: certs
+          readOnly: true
+      ports:
+        - containerPort: 80
+          protocol: TCP
+        - containerPort: 443
+          protocol: TCP
+  volumes:
+    - name: html
+      emptyDir: { }
+    - name: config
+      configMap:
+        name: fortune-config
+        items:
+          - key: ssl.conf
+            path: ssl.conf
+    - name: certs
+      secret:
+        secretName: fortune-https

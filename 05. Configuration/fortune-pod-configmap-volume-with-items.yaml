@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-configmap-with-items
+  labels:
+    app: fortune
+spec:
+  containers:
+    - name: html-generator
+      image: burkovski/fortune-env
+      volumeMounts:
+        - mountPath: /var/htdocs
+          name: html
+    - name: web-server
+      image: nginx:alpine
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: html
+          readOnly: true
+        - mountPath: /etc/nginx/conf.d
+          name: config
+          readOnly: true
+      ports:
+        - containerPort: 80
+          protocol: TCP
+  volumes:
+    - name: html
+      emptyDir: { }
+    - name: config
+      configMap:
+        name: fortune-config
+        items:
+          - key: my-nginx-config.conf
+            path: gzip.conf

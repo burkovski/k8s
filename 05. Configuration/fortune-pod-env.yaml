@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: fortune-env
+  labels:
+    app: fortune
+spec:
+  containers:
+    - name: html-generator
+      image: burkovski/fortune-env
+      env:
+        - name: INTERVAL
+          value: "3"
+      volumeMounts:
+        - mountPath: /var/htdocs
+          name: html
+    - name: web-server
+      image: nginx:alpine
+      volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: html
+          readOnly: true
+      ports:
+        - containerPort: 80
+          protocol: TCP
+  volumes:
+    - name: html
+      emptyDir: { }
