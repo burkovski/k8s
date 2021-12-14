@@ -79,7 +79,7 @@ func setupRoutes(app *echo.Echo) {
 				fmt.Sprintf("unable to get hostname: %s", err))
 		}
 
-		return ctx.String(http.StatusOK, fmt.Sprintf("You've hit %q\n", hostname))
+		return ctx.String(http.StatusOK, fmt.Sprintf("You've hit kubia v1 on host: %q\n", hostname))
 	})
 }
 
