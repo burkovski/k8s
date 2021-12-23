@@ -76,7 +76,7 @@ func setupRoutes(app *echo.Echo) {
 		hostname, err := os.Hostname()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError,
-				fmt.Sprintf("unable to get hostname: %s", err))
+				fmt.Sprintf("Unable to get hostname: %s", err))
 		}
 
 		return ctx.String(http.StatusOK, fmt.Sprintf("You've hit kubia v2 on host: %q\n", hostname))

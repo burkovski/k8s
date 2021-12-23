@@ -15,6 +15,10 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
+const (
+	requestThreshold = 5
+)
+
 var (
 	addr string
 )
@@ -72,14 +76,23 @@ func setupMiddlewares(app *echo.Echo) {
 }
 
 func setupRoutes(app *echo.Echo) {
+	var requestCount int
+
 	app.GET("/", func(ctx echo.Context) error {
+		requestCount++
+
 		hostname, err := os.Hostname()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError,
 				fmt.Sprintf("Unable to get hostname: %s", err))
 		}
 
-		return ctx.String(http.StatusOK, fmt.Sprintf("You've hit kubia v1 on host: %q\n", hostname))
+		if requestCount > requestThreshold {
+			return echo.NewHTTPError(http.StatusInternalServerError,
+				fmt.Sprintf("Some internal error has occurred at kubia v3 on host: %s!", hostname))
+		}
+
+		return ctx.String(http.StatusOK, fmt.Sprintf("You've hit kubia v3 on host: %q\n", hostname))
 	})
 }
 
